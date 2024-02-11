@@ -4,7 +4,6 @@ from pathlib import Path
 def main():
     ## Arguments
     Arg = Arguments()
-    
     location = Arg["location"]
     
     # Absolute Path = Full Path
@@ -13,13 +12,19 @@ def main():
     
     #All of this is dangerous and I don't want crash, so let's use try
     try:
-        location = IsLocation(location)
-        Folders = GetFolders(location)
-        for Folder in Folders:
-            print(GetFolders(Folder))
-            
+        if IsLocation(location):
+            raise ValueError("Location is invalid")
+        Folders = []
+        for Folder in GetFolders(location):
+            Folders.append(Path.as_posix(Folder))
+        print(Folders)
+        Files = []
+        for File in GetFiles(location):
+            if Path.as_posix(File).endswith("exe"):
+                Files.append(Path.as_posix(File))
+        print(Files)
     except Exception as e:
-        print("The Error is: ", e.args)
+        print("Error:", e)
 
 #Pass All Arguments
 def Arguments():
@@ -30,11 +35,9 @@ def Arguments():
 
 #Is the location real?
 def IsLocation(location):
-    if (not Path.is_absolute(location)):
-        os.path.abspath(location)
-        if(not Path.exists(location)):
-            return None
-    return location
+    if not Path(location).is_absolute(): return True
+    if not Path(location).exists(): return True
+    return False
 
 #Is it really file?
 def IsFile(filepath):
@@ -49,10 +52,21 @@ def GetFolders(location):
     if Filelist == []:
         return Folders
     for File in Filelist:
-        filepath = Path(Path.as_posix(location)+ "/" + File)
+        filepath = Path(Path.as_posix(location) + "/" + File)
         if not(IsFile(filepath)):
-            Folders.append(filepath)
+            Folders.append(Path(filepath))
     return Folders
+
+def GetFiles(location):
+    Files = []
+    Filelist = os.listdir(location)
+    if Filelist == []:
+        return Files
+    for File in Filelist:
+        filepath = Path(Path.as_posix(location) + "/" + File)
+        if IsFile(filepath):
+            Files.append(Path(filepath))
+    return Files
 
 #Define as script
 if __name__ == "__main__":
