@@ -1,4 +1,4 @@
-import os, argparse, json
+import os, argparse
 from pathlib import Path
 
 def main():
@@ -13,10 +13,13 @@ def main():
     
     #All of this is dangerous and I don't want crash, so let's use try
     try:
-        location = Path(IsLocation(location))
+        location = IsLocation(location)
+        Folders = GetFolders(location)
+        for Folder in Folders:
+            print(GetFolders(Folder))
+            
     except Exception as e:
         print("The Error is: ", e.args)
-    GetAllFiles(location)
 
 #Pass All Arguments
 def Arguments():
@@ -33,19 +36,23 @@ def IsLocation(location):
             return None
     return location
 
+#Is it really file?
 def IsFile(filepath):
-    if not(os.path.getsize(filepath) or os.path.getsize(filepath)==0): return False
-    if (Path(filepath).suffix == '' and Path.is_dir(filepath)): return False
+    if (Path(filepath).suffix == ''): return False
+    if (Path.is_dir(filepath)): return False
     return True
 
-#Creates Object File for all files in this directory and sub directories
-def GetAllFiles(location):
-    for file in os.listdir(location):
-        filepath = location/file
-        if (IsFile(filepath)):
-            print("#move files to desired location")
-        else:
-            print("#move folder to desired location")
+# GetFolders
+def GetFolders(location):
+    Folders = []
+    Filelist = os.listdir(location)
+    if Filelist == []:
+        return Folders
+    for File in Filelist:
+        filepath = Path(Path.as_posix(location)+ "/" + File)
+        if not(IsFile(filepath)):
+            Folders.append(filepath)
+    return Folders
 
 #Define as script
 if __name__ == "__main__":
