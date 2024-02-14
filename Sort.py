@@ -1,4 +1,4 @@
-import os, argparse, keyboard, time
+import os, argparse, keyboard
 from shutil import move
 from pathlib import Path
 
@@ -18,11 +18,10 @@ def main():
         #All of this is dangerous and I don't want crash
         #so let's use Exception Handling (try catch)
         try:
-            Files = GetFiles(location)
-            if Files != []: #Temporary
-                MoveFiles(Files, location)
+            if os.listdir(location):
+                MoveFiles(GetFiles(location), location)
         except Exception as e:
-            print("Error:", e)
+            print("The error is:", e)
             break
 
 #Pass All Arguments
@@ -38,7 +37,7 @@ def IsLocation(location) -> bool:
     if Path(location).exists(): return False
     return True
 
-#Is it really file?
+#Is it a file?
 def IsFile(filepath) -> bool:
     if (Path(filepath).suffix == ''): return False
     if (Path.is_dir(filepath)): return False
@@ -48,38 +47,22 @@ def IsFile(filepath) -> bool:
 def Runls(location) -> list:
     return os.listdir(location)
 
-#Returns Path object contains location and file
-def FilePathCreator(location,File) -> Path:
-    return Path(Path.as_posix(location) + "/" + File)
-
-# Returns all Folder in the directory
-def GetFolders(location) -> list:
-    Folders = []
-    for File in Runls(location):
-        Filepath = FilePathCreator(location,File)
-        if not(IsFile(Filepath)):
-            Folders.append(File)
-    return Folders
+#Returns if the suffix exists in the file extension
+def HasThisSuffix(File,Suffix) -> bool:
+    Ext = File.split(".")[-1]
+    return Suffix in Ext
 
 #Returns All Files in the directory
 def GetFiles(location) -> list:
     Files = []
     for File in Runls(location):
-        Filepath = FilePathCreator(location,File)
-        if IsFile(Filepath):
-            Files.append(File)
-    return Files
-
-#Returns a list that contains all the files with the extension name
-def GetFilesBySuffix(location, suffix) -> list:
-    Files = []
-    for File in Runls(location):
-        if File.endswith(suffix):
+        Filepath = Path(f'{Path.as_posix(location)}/{File}')
+        if IsFile(Filepath) and not HasThisSuffix(File,"crdownload"):
             Files.append(File)
     return Files
 
 #Moves File from old location to a new location
-def MoveFiles(Files, location) -> bool:
+def MoveFiles(Files, location) -> None:
     for File in Files:
         OldLocation = f'{Path.as_posix(location)}/{File}'
         Ext = File.split(".")[-1]
@@ -90,7 +73,6 @@ def MoveFiles(Files, location) -> bool:
         if not Path(os.path.dirname(NewLocation)).exists():
             Path.mkdir(os.path.dirname(NewLocation))
         move(OldLocation,NewLocation)
-    return True
 
 #Define as script
 if __name__ == "__main__":
