@@ -1,4 +1,4 @@
-import os, argparse, keyboard
+import os, argparse, keyboard, time
 from pathlib import Path
 
 def main():
@@ -13,15 +13,13 @@ def main():
     if IsLocation(location):
         return False
     
-    while True:
+    while not keyboard.is_pressed("q"):
         #All of this is dangerous and I don't want crash
         #so let's use Exception Handling (try catch)
         try:
-            if keyboard.read_key() == "q":
-                print("You pressed p")
-                break
-            print(GetFolders(location))
-            print(GetFilesBySuffix(location,"exe"))
+            if GetFiles(location) != []: #Temporarly
+                print(GetFolders(location))
+                print(GetFilesBySuffix(location,"exe"))
         except Exception as e:
             print("Error:", e)
             break
