@@ -2,6 +2,12 @@ import os, argparse, keyboard
 from shutil import move
 from pathlib import Path
 
+#
+# Copyright (C) 2024 Orel6505
+#
+# SPDX-License-Identifier: GNU General Public License v3.0
+#
+
 def main():
     ## Arguments
     Arg = Arguments()
