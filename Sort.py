@@ -42,12 +42,14 @@ def IsFile(filepath):
     if (Path.is_dir(filepath)): return False
     return True
 
+def Runls(location) -> list:
+    Filelist = os.listdir(location)
+    return Filelist
+                
 # GetFolders
 def GetFolders(location) -> list:
     Folders = []
-    Filelist = os.listdir(location)
-    if Filelist == []:
-        return Folders
+    Filelist = Runls(location)
     for File in Filelist:
         filepath = Path(Path.as_posix(location) + "/" + File)
         if not(IsFile(filepath)):
@@ -57,9 +59,7 @@ def GetFolders(location) -> list:
 #Get All Files in the directory
 def GetFiles(location) -> list:
     Files = []
-    Filelist = os.listdir(location)
-    if Filelist == []:
-        return Files
+    Filelist = Runls(location)
     for File in Filelist:
         filepath = Path(Path.as_posix(location) + "/" + File)
         if IsFile(filepath):
