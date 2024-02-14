@@ -1,4 +1,4 @@
-import os, argparse
+import os, argparse, keyboard
 from pathlib import Path
 
 def main():
@@ -11,17 +11,17 @@ def main():
     # print(Path.cwd()) -> Prints current directory
     
     #All of this is dangerous and I don't want crash, so let's use try
-    try:
-        if IsLocation(location):
-            return False
-        Folders = []
-        for Folder in GetFolders(location):
-            Folders.append(Path.as_posix(Folder))
-        print(Folders)
-        Files = []
-        print(GetFilesBySuffix(location,"exe"))
-    except Exception as e:
-        print("Error:", e)
+    if IsLocation(location):
+        return False
+    while True:
+        try:
+            if keyboard.read_key() == "q":
+                print("You pressed p")
+                break
+            print(GetFolders(location))
+            print(GetFilesBySuffix(location,"exe"))
+        except Exception as e:
+            print("Error:", e)
 
 #Pass All Arguments
 def Arguments():
@@ -53,7 +53,7 @@ def GetFolders(location) -> list:
     for File in Filelist:
         filepath = Path(Path.as_posix(location) + "/" + File)
         if not(IsFile(filepath)):
-            Folders.append(Path(filepath))
+            Folders.append(Path.as_posix(filepath))
     return Folders
 
 #Get All Files in the directory
@@ -63,13 +63,13 @@ def GetFiles(location) -> list:
     for File in Filelist:
         filepath = Path(Path.as_posix(location) + "/" + File)
         if IsFile(filepath):
-            Files.append(Path(filepath))
+            Files.append(Path.as_posix(File))
     return Files
 
 def GetFilesBySuffix(location, suffix) -> list:
     Files = []
     for File in GetFiles(location):
-        if IsFile(File) and Path.as_posix(File).endswith(suffix):
+        if Path.as_posix(File).endswith(suffix):
             Files.append(Path.as_posix(File))
     return Files
 
