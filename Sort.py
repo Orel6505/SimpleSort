@@ -1,10 +1,11 @@
 import os, argparse, keyboard, time
+from shutil import move
 from pathlib import Path
 
 def main():
     ## Arguments
     Arg = Arguments()
-    location = Arg["location"]
+    location = Path(Arg["location"])
     
     # Absolute Path = Full Path
     # Relative Path = Part of a Path
@@ -17,9 +18,9 @@ def main():
         #All of this is dangerous and I don't want crash
         #so let's use Exception Handling (try catch)
         try:
-            if GetFiles(location) != []: #Temporarly
-                print(GetFolders(location))
-                print(GetFilesBySuffix(location,"exe"))
+            Files = GetFiles(location)
+            if Files != []: #Temporary
+                MoveFiles(Files, location)
         except Exception as e:
             print("Error:", e)
             break
@@ -50,7 +51,7 @@ def Runls(location) -> list:
 #Returns Path object contains location and file
 def FilePathCreator(location,File) -> Path:
     return Path(Path.as_posix(location) + "/" + File)
-                
+
 # Returns all Folder in the directory
 def GetFolders(location) -> list:
     Folders = []
@@ -76,6 +77,20 @@ def GetFilesBySuffix(location, suffix) -> list:
         if File.endswith(suffix):
             Files.append(File)
     return Files
+
+#Moves File from old location to a new location
+def MoveFiles(Files, location) -> bool:
+    for File in Files:
+        OldLocation = f'{Path.as_posix(location)}/{File}'
+        Ext = File.split(".")[-1]
+        if Ext != '':
+            NewLocation = f'{Path.as_posix(location)}/{Ext}/{File}'
+        else:
+            NewLocation = f'{Path.as_posix(location)}/Others/{File}'
+        if not Path(os.path.dirname(NewLocation)).exists():
+            Path.mkdir(os.path.dirname(NewLocation))
+        move(OldLocation,NewLocation)
+    return True
 
 #Define as script
 if __name__ == "__main__":
