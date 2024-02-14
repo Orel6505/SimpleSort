@@ -8,26 +8,27 @@ def main():
     
     # Absolute Path = Full Path
     # Relative Path = Part of a Path
-    # print(Path.cwd()) -> Prints current directory
+    # print(Path.cwd()) -> current directory
     
     if IsLocation(location):
         return False
     
-    while True:
+    #while True:
         #All of this is dangerous and I don't want crash
         #so let's use Exception Handling (try catch)
-        try:
-            if keyboard.read_key() == "q":
-                print("You pressed p")
-                break
-            print(GetFolders(location))
-            print(GetFilesBySuffix(location,"exe"))
-        except Exception as e:
-            print("Error:", e)
+    #try:
+    if keyboard.read_key() == "q":
+        print("You pressed p")
+        #break
+    print(GetFolders(location))
+    print(GetFilesBySuffix(location,"exe"))
+    #except Exception as e:
+        #print("Error:", e)
+        #break
 
 #Pass All Arguments
 def Arguments():
-    parser = argparse.ArgumentParser(description="Just a simple sorting script",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description="Just another simple sorting script",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-l", "--location", type=str, nargs='?', default=Path.home()/"Downloads", help="Custom location to sort, default is Downloads folder")
     args = vars(parser.parse_args())
     return args
@@ -36,7 +37,7 @@ def Arguments():
 def IsLocation(location) -> bool:
     if Path(location).is_absolute(): return False
     if Path(location).exists(): return False
-    return False
+    return True
 
 #Is it really file?
 def IsFile(filepath) -> bool:
@@ -46,10 +47,9 @@ def IsFile(filepath) -> bool:
 
 #Returns list of all files in the directory
 def Runls(location) -> list:
-    Filelist = os.listdir(location)
-    return Filelist
+    return os.listdir(location)
 
-def FilePath(location,File) -> Path:
+def FilePathCreator(location,File) -> Path:
     return Path(Path.as_posix(location) + "/" + File)
                 
 # GetFolders
@@ -57,9 +57,9 @@ def GetFolders(location) -> list:
     Folders = []
     Filelist = Runls(location)
     for File in Filelist:
-        filepath = FilePath(location,File)
-        if not(IsFile(filepath)):
-            Folders.append(Path.as_posix(filepath))
+        Filepath = FilePathCreator(location,File)
+        if not(IsFile(Filepath)):
+            Folders.append(File)
     return Folders
 
 #Get All Files in the directory
@@ -67,16 +67,17 @@ def GetFiles(location) -> list:
     Files = []
     Filelist = Runls(location)
     for File in Filelist:
-        filepath = FilePath(location,File)
-        if IsFile(filepath):
-            Files.append(Path.as_posix(File))
+        Filepath = FilePathCreator(location,File)
+        if IsFile(Filepath):
+            Files.append(File)
     return Files
 
+#Returns a list that contains all the files with the extension name
 def GetFilesBySuffix(location, suffix) -> list:
     Files = []
-    for File in GetFiles(location):
-        if Path.as_posix(File).endswith(suffix):
-            Files.append(Path.as_posix(File))
+    for File in Runls(location):
+        if File.endswith(suffix):
+            Files.append(File)
     return Files
 
 #Define as script
