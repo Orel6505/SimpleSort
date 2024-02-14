@@ -10,10 +10,12 @@ def main():
     # Relative Path = Part of a Path
     # print(Path.cwd()) -> Prints current directory
     
-    #All of this is dangerous and I don't want crash, so let's use try
     if IsLocation(location):
         return False
+    
     while True:
+        #All of this is dangerous and I don't want crash
+        #so let's use Exception Handling (try catch)
         try:
             if keyboard.read_key() == "q":
                 print("You pressed p")
@@ -31,27 +33,31 @@ def Arguments():
     return args
 
 #Is the location real?
-def IsLocation(location):
-    if not Path(location).is_absolute(): return True
-    if not Path(location).exists(): return True
+def IsLocation(location) -> bool:
+    if Path(location).is_absolute(): return False
+    if Path(location).exists(): return False
     return False
 
 #Is it really file?
-def IsFile(filepath):
+def IsFile(filepath) -> bool:
     if (Path(filepath).suffix == ''): return False
     if (Path.is_dir(filepath)): return False
     return True
 
+#Returns list of all files in the directory
 def Runls(location) -> list:
     Filelist = os.listdir(location)
     return Filelist
+
+def FilePath(location,File) -> Path:
+    return Path(Path.as_posix(location) + "/" + File)
                 
 # GetFolders
 def GetFolders(location) -> list:
     Folders = []
     Filelist = Runls(location)
     for File in Filelist:
-        filepath = Path(Path.as_posix(location) + "/" + File)
+        filepath = FilePath(location,File)
         if not(IsFile(filepath)):
             Folders.append(Path.as_posix(filepath))
     return Folders
@@ -61,7 +67,7 @@ def GetFiles(location) -> list:
     Files = []
     Filelist = Runls(location)
     for File in Filelist:
-        filepath = Path(Path.as_posix(location) + "/" + File)
+        filepath = FilePath(location,File)
         if IsFile(filepath):
             Files.append(Path.as_posix(File))
     return Files
