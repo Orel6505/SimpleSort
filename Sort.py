@@ -13,16 +13,13 @@ def main():
     #All of this is dangerous and I don't want crash, so let's use try
     try:
         if IsLocation(location):
-            raise ValueError("Location is invalid")
+            return False
         Folders = []
         for Folder in GetFolders(location):
             Folders.append(Path.as_posix(Folder))
         print(Folders)
         Files = []
-        for File in GetFiles(location):
-            if Path.as_posix(File).endswith("exe"):
-                Files.append(Path.as_posix(File))
-        print(Files)
+        print(GetFilesBySuffix(location,"exe"))
     except Exception as e:
         print("Error:", e)
 
@@ -46,7 +43,7 @@ def IsFile(filepath):
     return True
 
 # GetFolders
-def GetFolders(location):
+def GetFolders(location) -> list:
     Folders = []
     Filelist = os.listdir(location)
     if Filelist == []:
@@ -57,7 +54,8 @@ def GetFolders(location):
             Folders.append(Path(filepath))
     return Folders
 
-def GetFiles(location):
+#Get All Files in the directory
+def GetFiles(location) -> list:
     Files = []
     Filelist = os.listdir(location)
     if Filelist == []:
@@ -66,6 +64,13 @@ def GetFiles(location):
         filepath = Path(Path.as_posix(location) + "/" + File)
         if IsFile(filepath):
             Files.append(Path(filepath))
+    return Files
+
+def GetFilesBySuffix(location, suffix) -> list:
+    Files = []
+    for File in GetFiles(location):
+        if IsFile(File) and Path.as_posix(File).endswith(suffix):
+            Files.append(Path.as_posix(File))
     return Files
 
 #Define as script
