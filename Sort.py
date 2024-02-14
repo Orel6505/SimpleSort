@@ -13,21 +13,21 @@ def main():
     if IsLocation(location):
         return False
     
-    #while True:
+    while True:
         #All of this is dangerous and I don't want crash
         #so let's use Exception Handling (try catch)
-    #try:
-    if keyboard.read_key() == "q":
-        print("You pressed p")
-        #break
-    print(GetFolders(location))
-    print(GetFilesBySuffix(location,"exe"))
-    #except Exception as e:
-        #print("Error:", e)
-        #break
+        try:
+            if keyboard.read_key() == "q":
+                print("You pressed p")
+                break
+            print(GetFolders(location))
+            print(GetFilesBySuffix(location,"exe"))
+        except Exception as e:
+            print("Error:", e)
+            break
 
 #Pass All Arguments
-def Arguments():
+def Arguments() -> dict:
     parser = argparse.ArgumentParser(description="Just another simple sorting script",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-l", "--location", type=str, nargs='?', default=Path.home()/"Downloads", help="Custom location to sort, default is Downloads folder")
     args = vars(parser.parse_args())
@@ -49,24 +49,23 @@ def IsFile(filepath) -> bool:
 def Runls(location) -> list:
     return os.listdir(location)
 
+#Returns Path object contains location and file
 def FilePathCreator(location,File) -> Path:
     return Path(Path.as_posix(location) + "/" + File)
                 
-# GetFolders
+# Returns all Folder in the directory
 def GetFolders(location) -> list:
     Folders = []
-    Filelist = Runls(location)
-    for File in Filelist:
+    for File in Runls(location):
         Filepath = FilePathCreator(location,File)
         if not(IsFile(Filepath)):
             Folders.append(File)
     return Folders
 
-#Get All Files in the directory
+#Returns All Files in the directory
 def GetFiles(location) -> list:
     Files = []
-    Filelist = Runls(location)
-    for File in Filelist:
+    for File in Runls(location):
         Filepath = FilePathCreator(location,File)
         if IsFile(Filepath):
             Files.append(File)
